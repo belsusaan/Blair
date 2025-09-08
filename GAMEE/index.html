@@ -1,20 +1,48 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Caso Child</title>
     <link rel="stylesheet" href="style.css">
     <!-- p5.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
-
-  <!-- dat.GUI -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
 </head>
 <body>
-    
+    <aside id="sidebar">
+      <div class="brand">
+  <img id="child-img" src="img/child.png" alt="Child" onerror="this.style.display='none'" />
+        <h1 class="title">EXPEDIENTE BLAIR</h1>
+        <h2 class="level">NIVEL 1</h2>
+      </div>
+
+      <div class="character-select" aria-label="Selecciona tu exorcista">
+          <label class="character-option">
+            <input type="radio" name="character" value="man" checked />
+            <img src="img/man.png" alt="Petro" />
+            <span>Petro</span>
+          </label>
+          <label class="character-option">
+            <input type="radio" name="character" value="woman" />
+            <img src="img/woman.png" alt="Dara" />
+            <span>Dara</span>
+          </label>
+        </div>
+
+        <div class="candle-wrap">
+          <canvas id="candle" width="120" height="260" aria-label="Vela"></canvas>
+        </div>
+
+        <p class="progress-label">PROGRESO DEL NIVEL</p>
+        <div class="progress-bar">
+          <div id="progress-fill"></div>
+          <span id="progress-text">0%</span>
+        </div>
+      
+    </aside>
+
+    <main id="game"></main>
+
     <script src="script.js"></script>
 </body>
 </html>
