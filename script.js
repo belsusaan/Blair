@@ -9,6 +9,7 @@ let startTime = 0; // Marca cuando comienza el juego para dar gracia en colision
 let showLoseMessage = false; // Para mostrar mensaje de pérdida
 let loseMessageTimer = 0; // Timer para el mensaje
 let loseMessageText = ''; // Texto del mensaje de pérdida
+let grabKeyText = '';
 let lastMouseX = 0, lastMouseY = 0; // Variables para rastrear posición anterior del mouse
 let movedX = 0, movedY = 0; // Variables para rastrear movimiento del mouse
 // Tamaño del mundo (coincide con path y fondo)
@@ -25,6 +26,8 @@ let shirtX = 55, shirtY = 700;
 let pantX = 150, pantY = 300;
 let spikeX = 620, spikeY = -80;
 let tvX = 290, tvY = 530;
+let tv2X = 1000, tv2Y = 980;
+let spike2X = 1400, spike2Y = -100;
 let touchedObject = false;
 
 // Ventilador rotativo con aspas
@@ -73,6 +76,7 @@ const objects = [
   {id: "pantalon", objectx: pantX, objecty: pantY, w: 120, h: 120, touched: false, message: "Tocaste el objeto maldito"},
   {id: "puas", objectx: spikeX, objecty: spikeY, w: 200, h: 200, touched: false, message: "Tocaste el objeto maldito"},
   {id: "tv", objectx: tvX, objecty: tvY, w: 110, h: 110, touched: false, message: "Tocaste el objeto maldito"},
+  {id: "tv2", objectx: tv2X, objecty: tv2Y, w: 110, h: 110, touched: false, message: "Tocaste el objeto maldito"}
 ]
 
 let onPlatform = null; // índice de plataforma si estamos encima
@@ -293,8 +297,9 @@ function setup() {
   const h = window.innerHeight;
   const cnv = createCanvas(w, h);
   if (host) cnv.parent('game');
-  x = 70;
-  y = 65;
+  // Definir posición inicial del jugador
+  x = 960;
+  y = 95;
   targetX = x;
   targetY = y;
   inicio = millis();
@@ -387,8 +392,8 @@ function draw() {
   // Limitar a los bordes del mundo
   desiredX = constrain(desiredX, 0, max(0, WORLD_W - viewW));
   desiredY = constrain(desiredY, 0, max(0, WORLD_H - viewH));
-  camX = lerp(camX, desiredX, 0.15);
-  camY = lerp(camY, desiredY, 0.15);
+  camX = lerp(camX, desiredX, 0.015);
+  camY = lerp(camY, desiredY, 0.015);
 
   push();
   translate(-camX * zoom, -camY * zoom);
@@ -432,8 +437,8 @@ function draw() {
       targetY = worldMouseY;
     }
     // Suavizar movimiento del jugador hacia la posición del mouse
-    x = lerp(x, targetX, 0.02); // Factor de suavizado (0.1 = suave, 0.3 = más rápido)
-    y = lerp(y, targetY, 0.02);
+    x = lerp(x, targetX, 0.05); // Factor de suavizado (0.1 = suave, 0.3 = más rápido)
+    y = lerp(y, targetY, 0.05);
     // Limitar jugador a los bordes del mapa
     x = constrain(x, 0, WORLD_W);
     y = constrain(y, 0, WORLD_H);
@@ -472,6 +477,8 @@ function draw() {
     image(pantalon, pantX, pantY, 120, 120);
     image(puas, spikeX, spikeY, 200, 200);
     image(tv2, tvX, tvY, 120, 120);
+    image(tv, tv2X, tv2Y, 120, 120);
+    image(puas, spike2X, spike2Y, 300, 300);
 
     // Si estamos sobre una plataforma, el jugador “viaja” con ella (se pega)
     const currentPlatform = playerOnPlatform(x, y);
@@ -550,6 +557,35 @@ function draw() {
     pop();
   }
 
+  // grab key
+  if(dialogShown) {
+    push();
+    textFont(penumbraFont); // Usar fuente Penumbra
+    noStroke();
+    fill(186,155,151, 100);
+    rect(0, 0, width, height);
+    fill(255);
+    textAlign(CENTER, CENTER);
+    textSize(32);
+    text(grabKeyText, width/2, height/2);
+    pop();
+  }
+
+  // door mensaje
+  if(doorMessageShown) {
+    push();
+    textFont(penumbraFont); // Usar fuente Penumbra
+    noStroke();
+    fill(186,155,151, 100);
+    rect(0, 0, width, height);
+    fill(255);
+    textAlign(CENTER, CENTER);
+    textSize(32);
+    text(doorText, width/2, height/2);
+    pop();
+  }
+
+
   if(!gameStarted) {
     // Overlay semitransparente en coordenadas de pantalla
     push();
@@ -578,21 +614,31 @@ function draw() {
   let d = dist(x, y, keyX, keyY)
   if (d<40 && !keyCollected) {
     keyCollected = true;
-    setTimeout(() => {
-        confirm(params.mensaje);
-    }, params.porcentaje);
     dialogShown = true;
+    grabKeyText = 'Bien, sigue adelante';
+    setTimeout(() => {
+     dialogShown = false;
+    }, 1000);
   }
 
   // Chequear llegada a la puerta
   if (x > door.x && x < door.x + door.w && y > door.y && y < door.y + door.h) {
     if (keyCollected && !gameOver) {
       gameOver = true;
-      setTimeout(()=>{ alert('¡Puerta abierta! Nivel superado.'); }, 50);
+      dialogShown = true;
+      doorText = '¡Puerta abierta! Nivel superado.'
+      doorMessageShown = true; // Evitar repetir el mensaje
+      setTimeout(() => {
+     dialogShown = false;
+    }, 1000);
     } else if (!keyCollected && !doorMessageShown) {
       // Mostrar mensaje si no tiene la llave
-      alert('Debes ir a traer la llave para abrir la puerta.');
+      dialogShown = true;
+      doorText = 'Debes ir a traer la llave para abrir la puerta.'
       doorMessageShown = true; // Evitar repetir el mensaje
+      setTimeout(() => {
+     dialogShown = false;
+    }, 1000);
     }
   } else {
     // Resetear el mensaje si sale de la puerta
