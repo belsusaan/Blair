@@ -734,7 +734,7 @@ function checkObjectsCollision(px, py, pw, ph) {
 let candleCtx;
 let candleCanvas;
 let candleStart = 0;
-let candleDuration = 120000; // 2 minutos en ms
+let candleDuration = 150000; // 2 minutos en ms
 
 function setupCandle() {
   candleCanvas = document.getElementById('candle');
