@@ -19,6 +19,13 @@ let zoomMultiplier = 1.8; // Multiplicador para zoom más cerca (1.0 = normal, >
 let camX = 0, camY = 0; // cámara
 let x, y; // Posición del jugador
 let targetX, targetY; // Posición objetivo para suavizar movimiento
+// Objetos al rededor de la pantalla
+let shoeX = 530, shoeY = 560;
+let shirtX = 55, shirtY = 700;
+let pantX = 150, pantY = 300;
+let spikeX = 620, spikeY = -80;
+let tvX = 290, tvY = 530;
+let touchedObject = false;
 
 // Ventilador rotativo con aspas
 let fan = {
@@ -59,6 +66,14 @@ const platforms = [
   // Quinta, la que cruza dos objetos
   {id: 'E', type: 'oscV', x: 1260, y0: 790, w: 200, h: 60, amp: 200, speed: 0.0008, phase: 0.0}
 ];
+
+const objects = [
+  {id: "shoe", objectx: shoeX, objecty: shoeY, w: 120, h: 120, touched: false, message: "Tocaste el objeto maldito"},
+  {id: "camisa", objectx: shirtX, objecty: shirtY, w: 140, h: 140, touched: false, message: "Tocaste el objeto maldito"},
+  {id: "pantalon", objectx: pantX, objecty: pantY, w: 120, h: 120, touched: false, message: "Tocaste el objeto maldito"},
+  {id: "puas", objectx: spikeX, objecty: spikeY, w: 200, h: 200, touched: false, message: "Tocaste el objeto maldito"},
+  {id: "tv", objectx: tvX, objecty: tvY, w: 110, h: 110, touched: false, message: "Tocaste el objeto maldito"},
+]
 
 let onPlatform = null; // índice de plataforma si estamos encima
 
@@ -101,7 +116,7 @@ function updatePlatforms() {
 function drawPlatforms() {
   push();
   noStroke();
-  fill(70, 100, 170); // azul
+  fill(50, 61, 63); // azul
   platforms.forEach(p=> rect(p.x, p.y, p.w, p.h));
   pop();
 }
@@ -313,6 +328,14 @@ function preload() {
     manImg = loadImage("img/man.png");
     womanImg = loadImage("img/woman.png");
     penumbraFont = loadFont('font/penumbraserifstd-semibold.otf');
+    camisa = loadImage("img/camisa.png");
+    camisa2 = loadImage("img/camisa2.png");
+    calcetas = loadImage("img/calcetas.png");
+    pantalon = loadImage("img/pantalon.png");
+    puas = loadImage("img/puas.png");
+    tv = loadImage("img/tv.png");
+    tv2 = loadImage("img/tv2.png");
+    zapatos = loadImage("img/zapatos.png");
 }
 
 // Puerta de salida al final de la esquina inferior derecha
@@ -409,8 +432,8 @@ function draw() {
       targetY = worldMouseY;
     }
     // Suavizar movimiento del jugador hacia la posición del mouse
-    x = lerp(x, targetX, 0.15); // Factor de suavizado (0.1 = suave, 0.3 = más rápido)
-    y = lerp(y, targetY, 0.15);
+    x = lerp(x, targetX, 0.02); // Factor de suavizado (0.1 = suave, 0.3 = más rápido)
+    y = lerp(y, targetY, 0.02);
     // Limitar jugador a los bordes del mapa
     x = constrain(x, 0, WORLD_W);
     y = constrain(y, 0, WORLD_H);
@@ -442,6 +465,13 @@ function draw() {
     fill(220, 210, 160);
     ellipse(door.x + door.w - 8, door.y + door.h/2, 4, 4);
     pop();
+
+    // ELEMENTOS POR ENCIMA,EXTRA
+    image(zapatos, shoeX, shoeY, 120, 120);
+    image(camisa2, shirtX, shirtY, 120, 120);
+    image(pantalon, pantX, pantY, 120, 120);
+    image(puas, spikeX, spikeY, 200, 200);
+    image(tv2, tvX, tvY, 120, 120);
 
     // Si estamos sobre una plataforma, el jugador “viaja” con ella (se pega)
     const currentPlatform = playerOnPlatform(x, y);
@@ -475,6 +505,9 @@ function draw() {
         reStart();
       }, 2000);
     }
+
+    // llamar función colisión de objetos
+    checkObjectsCollision(x, y, 25, 25); // 25x25 es el tamaño del jugador
 
     // dibujar jugador con imagen
     drawPlayer(x, y);
@@ -575,6 +608,9 @@ function draw() {
     gameStarted = true;
     startTime = millis();
     inicio = millis();
+    objects.forEach(function(obj) {
+      obj.touched = false;
+    });
     doorMessageShown = false; // Resetear mensaje de puerta
     showLoseMessage = false; // Resetear mensaje de pérdida
     candleStart = performance.now(); // Reiniciar vela al perder
@@ -584,6 +620,30 @@ function draw() {
     if (progressFill) progressFill.style.width = '0%';
     if (progressText) progressText.textContent = '0%';
   }
+
+  
+// función para comprobar si el jugador colisiona con los objetos en medio del camino
+function checkObjectsCollision(px, py, pw, ph) {
+  for (let obj of objects) {
+    let margin = 16;
+    if (
+      px + margin < obj.objectx + obj.w - margin &&
+      px + pw - margin > obj.objectx + margin &&
+      py + margin < obj.objecty + obj.h - margin &&
+      py + ph - margin > obj.objecty + margin
+    ) {
+      if (!obj.touched) {
+        obj.touched = true;
+        showLoseMessage = true;
+        loseMessageTimer = millis();
+        loseMessageText = obj.message;
+        setTimeout(() => {
+          reStart();
+        }, 2000);
+      }
+    }
+  }
+}
 
   // Verificar colisiones con el camino (con breve período de gracia)
   let dentro = false;
