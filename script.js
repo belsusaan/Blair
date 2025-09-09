@@ -15,7 +15,7 @@ let movedX = 0, movedY = 0; // Variables para rastrear movimiento del mouse
 // Tamaño del mundo (coincide con path y fondo)
 const WORLD_W = 1950;
 const WORLD_H = 1200;
-let zoom = 1.0; // escala de pantalla (se calcula para cubrir el área visible)
+let zoom = 1.6; // escala de pantalla (se calcula para cubrir el área visible)
 let zoomMultiplier = 1.8; // Multiplicador para zoom más cerca (1.0 = normal, >1.0 = acercar)
 let camX = 0, camY = 0; // cámara
 let x, y; // Posición del jugador
@@ -298,8 +298,8 @@ function setup() {
   const cnv = createCanvas(w, h);
   if (host) cnv.parent('game');
   // Definir posición inicial del jugador
-  x = 960;
-  y = 95;
+  x = 125;
+  y = 60;
   targetX = x;
   targetY = y;
   inicio = millis();
@@ -437,8 +437,8 @@ function draw() {
       targetY = worldMouseY;
     }
     // Suavizar movimiento del jugador hacia la posición del mouse
-    x = lerp(x, targetX, 0.05); // Factor de suavizado (0.1 = suave, 0.3 = más rápido)
-    y = lerp(y, targetY, 0.05);
+    x = lerp(x, targetX, 0.1); // Factor de suavizado (0.1 = suave, 0.3 = más rápido)
+    y = lerp(y, targetY, 0.1);
     // Limitar jugador a los bordes del mapa
     x = constrain(x, 0, WORLD_W);
     y = constrain(y, 0, WORLD_H);
