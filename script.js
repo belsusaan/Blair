@@ -21,8 +21,8 @@ let camX = 0, camY = 0; // cámara
 let x, y; // Posición del jugador
 let targetX, targetY; // Posición objetivo para suavizar movimiento
 // Objetos al rededor de la pantalla
-let shoeX = 530, shoeY = 560;
-let shirtX = 55, shirtY = 700;
+let shoeX = 535, shoeY = 560;
+let shirtX = 40, shirtY = 720;
 let pantX = 150, pantY = 300;
 let spikeX = 620, spikeY = -80;
 let tvX = 290, tvY = 530;
@@ -65,9 +65,9 @@ const platforms = [
   { id:'C', type:'specialC', x: 920, y: 470, w: 90, h: 90, baseY: 470, yUp: 240, rightX: 1040, leftX: 920,
     vx: 0.6, vy: 0.6, state: 'goingUp', pauseMs: 800, t: 0 },
     // Cuarta plataforma 
-  {id: 'D', type: 'oscV', x: 1360, y0: 300, w: 70, h: 80, amp: 100, speed: 0.0015, phase: 0.0},
+  {id: 'D', type: 'oscV', x: 1360, y0: 300, w: 70, h: 80, amp: 100, speed: 0.0010, phase: 0.0},
   // Quinta, la que cruza dos objetos
-  {id: 'E', type: 'oscV', x: 1260, y0: 790, w: 200, h: 60, amp: 200, speed: 0.0008, phase: 0.0}
+  {id: 'E', type: 'oscV', x: 1260, y0: 790, w: 200, h:80, amp: 200, speed: 0.0008, phase: 0.0}
 ];
 
 const objects = [
@@ -392,8 +392,8 @@ function draw() {
   // Limitar a los bordes del mundo
   desiredX = constrain(desiredX, 0, max(0, WORLD_W - viewW));
   desiredY = constrain(desiredY, 0, max(0, WORLD_H - viewH));
-  camX = lerp(camX, desiredX, 0.015);
-  camY = lerp(camY, desiredY, 0.015);
+  camX = lerp(camX, desiredX, 0.01);
+  camY = lerp(camY, desiredY, 0.01);
 
   push();
   translate(-camX * zoom, -camY * zoom);
